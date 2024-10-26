@@ -1,0 +1,22 @@
+import numpy as np
+
+P_A = 0.5
+P_B = 0.5
+
+def likelihood_heads(coin, flips):
+    if coin == 'A':
+        return (0.5 ** flips) * (0.5 ** (10 - flips))
+    elif coin == 'B':
+        return (0.9 ** flips) * (0.1 ** (10 - flips))
+
+observed_heads = 8
+total_flips = 10
+likelihood_A = likelihood_heads('A', observed_heads)
+likelihood_B = likelihood_heads('B', observed_heads)
+marginal_likelihood = (likelihood_A * P_A) + (likelihood_B * P_B)
+
+posterior_A = (likelihood_A * P_A) / marginal_likelihood
+posterior_B = (likelihood_B * P_B) / marginal_likelihood
+
+print(f"Posterior Probability of Coin A: {posterior_A:.4f}")
+print(f"Posterior Probability of Coin B: {posterior_B:.4f}")
