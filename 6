@@ -1,0 +1,41 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.mixture import GaussianMixture
+
+np.random.seed(42)
+means = [[2, 2], [8, 8], [5, 1]]
+covariances = [[[1, 0], [0, 1]], [[1, 0], [0, 1]], [[1, 0], [0, 1]]]
+n_samples = 500
+data = np.vstack([
+    np.random.multivariate_normal(mean, cov, n_samples // len(means))
+    for mean, cov in zip(means, covariances)
+])
+
+n_components = len(means)
+gmm = GaussianMixture(n_components=n_components, covariance_type='full')
+gmm.fit(data)
+labels = gmm.predict(data)
+
+plt.figure(figsize=(12, 6))
+plt.subplot(1, 2, 1)
+plt.scatter(data[:, 0], data[:, 1], c=labels, s=30, cmap='viridis', alpha=0.5)
+plt.title('GMM Clustering')
+plt.xlabel('X1')
+plt.ylabel('X2')
+
+x = np.linspace(-1, 10, 100)
+y = np.linspace(-1, 10, 100)
+X, Y = np.meshgrid(x, y)
+XX = np.column_stack([X.ravel(), Y.ravel()])
+logprob = gmm.score_samples(XX)
+pdf = np.exp(logprob).reshape(X.shape)
+
+plt.subplot(1, 2, 2)
+plt.contourf(X, Y, pdf, levels=20, cmap='Blues', alpha=0.7)
+plt.scatter(data[:, 0], data[:, 1], c='red', s=10, alpha=0.5)
+plt.title('Density Estimation using GMM')
+plt.xlabel('X1')
+plt.ylabel('X2')
+plt.colorbar(label='Density')
+plt.tight_layout()
+plt.show()
